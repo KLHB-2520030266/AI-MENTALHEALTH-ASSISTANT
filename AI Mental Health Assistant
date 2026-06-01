@@ -1,0 +1,468 @@
+# ==========================================================
+# SILENTMIND - AI MENTAL HEALTH CONSOLE APPLICATION
+# ==========================================================
+# Features:
+# 1. Emotional Support Chatbot
+# 2. Depression Detection Quiz
+# 3. Stress Prediction
+# 4. BFS / DFS / A* Emotional Recovery
+# 5. Wellness Constraint Checker (CSP)
+# 6. Markov Emotional Forecasting
+# 7. Utility-Based Decision Making
+# 8. Explainable AI Reasoning
+# ==========================================================
+
+from collections import deque
+import heapq
+import random
+
+# ==========================================================
+# KNOWLEDGE BASE
+# ==========================================================
+
+emotion_support = {
+    "sad": "I'm here for you. Remember, difficult moments do not last forever.",
+    "stress": "Try taking deep breaths. Small breaks can help reduce stress.",
+    "anxiety": "Focus on one thing at a time. You are stronger than your thoughts.",
+    "lonely": "You are not alone. Reaching out to someone you trust may help.",
+    "depressed": "Your feelings matter. Please consider talking to someone close or a professional.",
+    "happy": "That's wonderful to hear. Keep spreading positivity."
+}
+
+emotion_graph = {
+    "Stress": ["Meditation", "Sleep", "Music"],
+    "Sad": ["Friends", "Exercise", "Music"],
+    "Anxiety": ["Breathing", "Meditation", "Sleep"],
+    "Depression": ["Therapy", "Friends", "Meditation"]
+}
+
+recovery_cost = {
+    "Meditation": 2,
+    "Sleep": 1,
+    "Music": 4,
+    "Friends": 3,
+    "Exercise": 2,
+    "Breathing": 1,
+    "Therapy": 1
+}
+
+# ==========================================================
+# CHATBOT
+# ==========================================================
+
+def chatbot():
+
+    print("\n==============================")
+    print(" SILENTMIND AI CHATBOT ")
+    print("==============================")
+
+    user = input("\nHow are you feeling today? ").lower()
+
+    found = False
+
+    for emotion in emotion_support:
+
+        if emotion in user:
+            print("\nAI Support:")
+            print(emotion_support[emotion])
+            found = True
+
+    if not found:
+        print("\nAI Support:")
+        print("Thank you for sharing. I'm always here to listen.")
+
+# ==========================================================
+# DEPRESSION QUIZ
+# ==========================================================
+
+def depression_quiz():
+
+    print("\n==============================")
+    print(" MENTAL HEALTH ASSESSMENT ")
+    print("==============================")
+
+    questions = [
+        "Do you often feel hopeless? ",
+        "Do you struggle to sleep properly? ",
+        "Do you feel emotionally exhausted? ",
+        "Do you avoid social interaction? ",
+        "Do you feel anxious frequently? "
+    ]
+
+    score = 0
+
+    for q in questions:
+
+        ans = input(q + "(yes/no): ").lower()
+
+        if ans == "yes":
+            score += 1
+
+    print("\nAssessment Result:")
+
+    if score <= 1:
+        print("Mental State: Stable")
+
+    elif score <= 3:
+        print("Mental State: Moderate Stress")
+
+    else:
+        print("Mental State: High Emotional Distress")
+
+        print("\nAI Emotional Support:")
+        print("You may be going through a difficult time.")
+        print("Please remember that seeking help is a sign of strength.")
+        print("Consider speaking with trusted people or professionals.")
+
+# ==========================================================
+# BFS SEARCH
+# ==========================================================
+
+def bfs_recovery(start):
+
+    print("\n===== BFS Emotional Recovery =====")
+
+    queue = deque([(start, [])])
+
+    visited = set()
+
+    while queue:
+
+        state, path = queue.popleft()
+
+        if state not in visited:
+
+            visited.add(state)
+
+            print("Visited:", state)
+
+            if state == "Calm":
+                return path + ["Calm"]
+
+            for action in emotion_graph.get(state, []):
+                queue.append(("Calm", path + [action]))
+
+    return None
+
+# ==========================================================
+# DFS SEARCH
+# ==========================================================
+
+def dfs_recovery(state, visited=None, path=None):
+
+    if visited is None:
+        visited = set()
+
+    if path is None:
+        path = []
+
+    print("Visited:", state)
+
+    if state == "Calm":
+        return path + ["Calm"]
+
+    visited.add(state)
+
+    for action in emotion_graph.get(state, []):
+
+        result = dfs_recovery("Calm", visited, path + [action])
+
+        if result:
+            return result
+
+    return None
+
+# ==========================================================
+# A* SEARCH
+# ==========================================================
+
+def heuristic(action):
+
+    return recovery_cost[action]
+
+def astar_recovery(start):
+
+    print("\n===== A* Emotional Recovery =====")
+
+    pq = []
+
+    visited = set()
+
+    for action in emotion_graph[start]:
+
+        cost = heuristic(action)
+
+        heapq.heappush(pq, (cost, action))
+
+    while pq:
+
+        cost, action = heapq.heappop(pq)
+
+        print(f"Selected Action: {action}")
+        print(f"Heuristic Cost: {cost}")
+
+        if action not in visited:
+
+            visited.add(action)
+
+            return ["Start", action, "Calm"]
+
+    return None
+
+# ==========================================================
+# CSP WELLNESS CHECKER
+# ==========================================================
+
+def wellness_csp():
+
+    print("\n==============================")
+    print(" WELLNESS CONSTRAINT CHECKER ")
+    print("==============================")
+
+    sleep = int(input("Sleep Hours: "))
+    stress = int(input("Stress Level (1-100): "))
+    screen = int(input("Screen Time Hours: "))
+
+    valid = True
+
+    if sleep < 6:
+        print("Constraint Failed -> Low Sleep")
+        valid = False
+
+    if stress > 70:
+        print("Constraint Failed -> High Stress")
+        valid = False
+
+    if screen > 6:
+        print("Constraint Failed -> Excess Screen Time")
+        valid = False
+
+    if valid:
+        print("Wellness Constraints Satisfied")
+    else:
+        print("Mental Wellness Imbalance Detected")
+
+# ==========================================================
+# BAYESIAN STRESS PREDICTION
+# ==========================================================
+
+def stress_prediction():
+
+    print("\n==============================")
+    print(" STRESS PREDICTION SYSTEM ")
+    print("==============================")
+
+    sleep = int(input("Sleep Hours: "))
+
+    if sleep < 5:
+        probability = 0.85
+
+    elif sleep < 7:
+        probability = 0.60
+
+    else:
+        probability = 0.20
+
+    print(f"\nProbability of Stress = {probability * 100:.2f}%")
+
+# ==========================================================
+# MARKOV EMOTION FORECAST
+# ==========================================================
+
+transition_matrix = {
+
+    "Calm": {
+        "Calm": 0.6,
+        "Stress": 0.2,
+        "Sad": 0.1,
+        "Anxiety": 0.1
+    },
+
+    "Stress": {
+        "Calm": 0.2,
+        "Stress": 0.5,
+        "Sad": 0.2,
+        "Anxiety": 0.1
+    },
+
+    "Sad": {
+        "Calm": 0.3,
+        "Stress": 0.3,
+        "Sad": 0.3,
+        "Anxiety": 0.1
+    },
+
+    "Anxiety": {
+        "Calm": 0.2,
+        "Stress": 0.4,
+        "Sad": 0.2,
+        "Anxiety": 0.2
+    }
+}
+
+def markov_forecast():
+
+    print("\n==============================")
+    print(" MARKOV EMOTIONAL FORECAST ")
+    print("==============================")
+
+    current = input("Current Emotion: ")
+
+    if current not in transition_matrix:
+        print("Unknown Emotion State")
+        return
+
+    next_state = random.choices(
+        list(transition_matrix[current].keys()),
+        weights=transition_matrix[current].values()
+    )[0]
+
+    print("Predicted Next Emotional State:", next_state)
+
+# ==========================================================
+# UTILITY DECISION SYSTEM
+# ==========================================================
+
+def utility_system():
+
+    print("\n==============================")
+    print(" UTILITY BASED DECISION ")
+    print("==============================")
+
+    utilities = {
+        "Meditation": 90,
+        "Sleep": 95,
+        "Exercise": 80,
+        "Social Media": 20
+    }
+
+    for action, score in utilities.items():
+        print(action, "-> Utility:", score)
+
+    best = max(utilities, key=utilities.get)
+
+    print("\nBest Recommended Action:", best)
+
+# ==========================================================
+# EXPLAINABLE AI
+# ==========================================================
+
+def explainable_ai():
+
+    print("\n==============================")
+    print(" EXPLAINABLE AI REASONING ")
+    print("==============================")
+
+    sleep = int(input("Sleep Hours: "))
+    stress = int(input("Stress Level: "))
+
+    print("\nReasoning Trace:")
+
+    if sleep < 6:
+        print("- Low sleep detected")
+
+    if stress > 70:
+        print("- High stress detected")
+
+    if sleep < 6 and stress > 70:
+        print("- Anxiety probability increased")
+
+    print("- Recommended Solution: Meditation")
+
+# ==========================================================
+# MAIN MENU
+# ==========================================================
+
+def main():
+
+    while True:
+
+        print("\n===================================")
+        print(" SILENTMIND AI MENTAL ASSISTANT ")
+        print("===================================")
+
+        print("1. AI Emotional Chatbot")
+        print("2. Mental Health Quiz")
+        print("3. BFS Emotional Recovery")
+        print("4. DFS Emotional Recovery")
+        print("5. A* Emotional Recovery")
+        print("6. Wellness Constraint Checker")
+        print("7. Stress Prediction")
+        print("8. Markov Emotion Forecast")
+        print("9. Utility Decision System")
+        print("10. Explainable AI")
+        print("11. Exit")
+
+        choice = input("\nEnter Choice: ")
+
+        # CHATBOT
+        if choice == "1":
+            chatbot()
+
+        # QUIZ
+        elif choice == "2":
+            depression_quiz()
+
+        # BFS
+        elif choice == "3":
+
+            emotion = input("Enter Emotion: ")
+
+            result = bfs_recovery(emotion)
+
+            print("Recovery Path:", result)
+
+        # DFS
+        elif choice == "4":
+
+            emotion = input("Enter Emotion: ")
+
+            result = dfs_recovery(emotion)
+
+            print("Recovery Path:", result)
+
+        # A*
+        elif choice == "5":
+
+            emotion = input("Enter Emotion: ")
+
+            result = astar_recovery(emotion)
+
+            print("Optimal Recovery:", result)
+
+        # CSP
+        elif choice == "6":
+            wellness_csp()
+
+        # BAYES
+        elif choice == "7":
+            stress_prediction()
+
+        # MARKOV
+        elif choice == "8":
+            markov_forecast()
+
+        # UTILITY
+        elif choice == "9":
+            utility_system()
+
+        # XAI
+        elif choice == "10":
+            explainable_ai()
+
+        # EXIT
+        elif choice == "11":
+
+            print("\nThank you for using SilentMind")
+            print("Take care of yourself.")
+
+            break
+
+        else:
+            print("Invalid Choice")
+
+# ==========================================================
+# START APPLICATION
+# ==========================================================
+
+main()
